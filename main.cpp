@@ -75,8 +75,10 @@ public:
     // получить текущее содержимое текстового редактора
     string GetText() const {
         string output = "";
-        for (auto ch : text) {
-            output += ch;
+        for (auto tmpiter = text.begin(); tmpiter != text.end(); ++tmpiter) {
+            if (tmpiter != iter) {
+                output+= *tmpiter;
+            }
         }
         return output;
     }
