@@ -36,9 +36,12 @@ public:
     
     // вырезать не более tokens символов, начиная с текущей позиции курсора
     void Cut(size_t tokens = 1) {
+        if (text.size() == 1) {
+            return;
+        }
         auto tmpbegin = iter;
         auto tmpend = iter;
-        if (tokens >= 1) {
+        if (iter != text.end()) {
             ++tmpbegin;
         }
         auto dist = min(tokens, static_cast<size_t>(distance(iter, text.end())));
@@ -50,21 +53,27 @@ public:
 
         buffer.erase(buffer.begin(), buffer.end());
         buffer.insert(buffer.begin(), tmpbegin, tmpend);
-        --tmpend;
+        //--tmpend;
         text.erase(tmpbegin, tmpend);
-        text.erase(tmpend);
+        //text.erase(tmpend);
     }
     
     // cкопировать не более tokens символов, начиная с текущей позиции курсора
     void Copy(size_t tokens = 1) {
-        if (tokens >= 1) {
-            ++iter;
+        auto tmpend = iter;
+        auto tmpbegin = iter;
+        if (tmpbegin != text.end()) {
+            ++tmpbegin;
         }
-        auto dist = min(tokens, static_cast<size_t>(distance(iter, text.end())));
-        auto tmpiter = iter;
-        advance(tmpiter, dist);
+        auto dist = min(tokens, static_cast<size_t>(distance(tmpbegin, text.end())));
+        advance(tmpend, dist);
+
+        if (tmpend != text.end()) {
+            ++tmpend;
+        }
+
         buffer.erase(buffer.begin(), buffer.end());
-        buffer.insert(buffer.begin(), iter, tmpiter);
+        buffer.insert(buffer.begin(), tmpbegin, tmpend);
     }
     
     // вставить содержимое буфера в текущую позицию курсора
@@ -102,22 +111,16 @@ int main() {
     }
     cout << editor.GetText() << endl; 
     // Текущее состояние редактора: `|hello, world`
-    editor.Cut(7);
-    
+    editor.Cut(7); 
     cout << editor.GetText() << endl; 
     // Текущее состояние редактора: `|world`
     // в буфере обмена находится текст `hello, `
     for (size_t i = 0; i < 5; ++i) {
         editor.Right();
-    
-
     }
     cout << editor.GetText() << endl; 
     // Текущее состояние редактора: `world|`
     editor.Insert(',');
-    
-
-    
     editor.Insert(' ');
     
     cout << editor.GetText() << endl; 
@@ -133,6 +136,4 @@ int main() {
     editor.Cut(3);  // Будут вырезаны 2 символа
     cout << editor.GetText() << endl; 
     // Текущее состояние редактора: `world, hello|`
-    cout << editor.GetText();
-    return 0;
 }
